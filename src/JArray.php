@@ -25,17 +25,6 @@ class JArray implements \ArrayAccess, \Serializable, \Countable, \Iterator
         return $this->data;
     }
 
-    protected function getCloneIsNew($isNew, $data)
-    {
-        if ($isNew) {
-            return new static($data);
-        }
-        else {
-            $this->data = $data;
-            return $this;
-        }
-    }
-
     /*
      * кол-во элементов
      */
@@ -59,25 +48,28 @@ class JArray implements \ArrayAccess, \Serializable, \Countable, \Iterator
      * Добавить
      */
 
-    public function add(...$values)
+    public function add(...$values): JArray
     {
         foreach ($values as $value) {
             $this->data[] = $value;
         }
+        return $this;
     }
 
-    public function append(...$values)
+    public function append(...$values): JArray
     {
         foreach ($values as $value) {
             $this->data[] = $value;
         }
+        return $this;
     }
 
-    public function push(...$values)
+    public function push(...$values): JArray
     {
         foreach ($values as $value) {
             $this->data[] = $value;
         }
+        return $this;
     }
 
     public function unshift(...$values)
@@ -85,16 +77,19 @@ class JArray implements \ArrayAccess, \Serializable, \Countable, \Iterator
         foreach ($values as $value) {
             array_unshift($this->data, $value);
         }
+        return $this;
     }
 
     public function set($offset, $value)
     {
         $this->data[$offset] = $value;
+        return $this;
     }
 
     public function insert($offset, $value)
     {
         $this->set($offset, $value);
+        return $this;
     }
 
     /*
@@ -116,6 +111,14 @@ class JArray implements \ArrayAccess, \Serializable, \Countable, \Iterator
         $ret = $this->get($offset);
         unset($this[$offset]);
         return $ret;
+    }
+
+    public function removeKeys(...$keys)
+    {
+        foreach ($keys as $key) {
+            $this->remove($key);
+        }
+        return $this;
     }
 
     public function delete($offset)
@@ -218,33 +221,33 @@ class JArray implements \ArrayAccess, \Serializable, \Countable, \Iterator
         return $this;
     }
 
-    public function filter(\Closure $callback = null, $isNew = false, $flag = 0)
+    public function filter(\Closure $callback = null, $flag = 0)
     {
         if (is_null($callback)) {
             $callback = function($item) {
                 return $item != false;
             };
         }
-        $data = array_filter($this->data, $callback, $flag);
-        return $this->getCloneIsNew($isNew, $data);
+        $this->data = array_filter($this->data, $callback, $flag);
+        return $this;
     }
 
-    public function map(\Closure $callback, $isNew = false)
+    public function map(\Closure $callback)
     {
-        $data = array_map($callback, $this->data);
-        return $this->getCloneIsNew($isNew, $data);
+        $this->data = array_map($callback, $this->data);
+        return $this;
     }
 
-    public function merge($data, $isNew = false)
+    public function merge($data)
     {
         if ($data instanceof self) {
             $data = $data->toArray();
         }
-        $data = array_merge($this->data, $data);
-        return $this->getCloneIsNew($isNew, $data);
+        $this->data = array_merge($this->data, $data);
+        return $this;
     }
 
-    public function replace($need, $replace, $isNew = false, $strict = false)
+    public function replace($need, $replace, $strict = false)
     {
         $need = is_array($need) ? new static($need) : $need;
         $f = function($item) use($need, $replace, $strict) {
@@ -265,19 +268,18 @@ class JArray implements \ArrayAccess, \Serializable, \Countable, \Iterator
                 return $item;
             }
         };
-        return $this->map($f, $isNew);
+        return $this->map($f);
     }
 
-    public function sort($sort_flags = SORT_REGULAR, $isNew = false)
+    public function sort($sort_flags = SORT_REGULAR)
     {
-        $data = $this->data;
-        sort($data, $sort_flags);
-        return $this->getCloneIsNew($isNew, $data);
+        sort($this->data, $sort_flags);
+        return $this;
     }
 
-    public function unique($sort_flags = SORT_STRING, $isNew = false)
+    public function unique($sort_flags = SORT_STRING)
     {
-        $data = array_unique($this->data, $sort_flags);
-        return $this->getCloneIsNew($isNew, $data);
+        $this->data = array_unique($this->data, $sort_flags);
+        return $this;
     }
 }
