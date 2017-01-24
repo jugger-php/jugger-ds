@@ -31,21 +31,20 @@ class JArrayTest extends TestCase
         // эквиваленты
         $this->assertEquals(count($arr), 6);
         $this->assertEquals($arr->count(), 6);
-        $this->assertEquals($arr->size(), 6);
         $this->assertEquals($arr->length(), 6);
 
         // эквиваленты
         $arr->unshift(0);
-        $arr->add(7);
-        $arr->append(8, '9');
+        $arr->push(7);
+        $arr->push(8, '9');
         $arr->push(...[10,11]);
         $arr[] = 12;
 
         // эквиваленты, почти
         unset($arr[6]);
         $this->assertTrue($arr->remove(5) == 'five');
-        $this->assertTrue($arr->delete(4) == 'four');
-        $this->assertNull($arr->del(4)); // уже удален
+        $this->assertTrue($arr->remove(4) == 'four');
+        $this->assertNull($arr->remove(4)); // уже удален
         // $this->assertTrue($arr->shift() == 0);
         $this->assertTrue($arr->pop() == 12);
 
@@ -53,7 +52,6 @@ class JArrayTest extends TestCase
         // эквиваленты
         $this->assertEquals($arr[7], 7);
         $this->assertEquals($arr->get(8), 8);
-        $this->assertEquals($arr->at(9), 9);
 
         return $arr;
     }
@@ -66,14 +64,11 @@ class JArrayTest extends TestCase
         $arr->keys();
         $arr->values();
 
-        $this->assertTrue((bool) $arr->keyExist(9));
+        $this->assertTrue((bool) isset($arr[9]));
         $this->assertTrue((bool) $arr->search(9));
-        $this->assertTrue((bool) $arr->exist(9));
-        $this->assertTrue((bool) $arr->indexOf(9));
-        $this->assertTrue((bool) $arr->contains(9));
+        $this->assertTrue((bool) $arr->exists(9));
 
-        $this->assertFalse($arr->keyExist(12));
-        $this->assertFalse($arr->contains(12));
+        $this->assertFalse($arr->exists(12));
 
         $this->assertEquals($arr->sum(), 51);
         $this->assertEquals($arr->max(), 11);
@@ -91,9 +86,10 @@ class JArrayTest extends TestCase
         });
         $this->assertTrue([2,2,2,2,2] == $arr->toArray());
 
-        $arr1 = $arr->map(function($x) {
+        $arr1 = (clone $arr)->map(function($x) {
             return $x + 1;
-        }, true);
+        });
+
         $this->assertTrue([2,2,2,2,2] == $arr->toArray());
         $this->assertTrue([3,3,3,3,3] == $arr1->toArray());
 
@@ -112,7 +108,7 @@ class JArrayTest extends TestCase
         $arr->unique();
         $this->assertTrue([4] == $arr->toArray());
 
-        $arr->add(8,2,9,4,2,1);
+        $arr->push(8,2,9,4,2,1);
         $this->assertTrue([4,8,2,9,4,2,1] == $arr->values()->toArray());
 
         $arr->sort();

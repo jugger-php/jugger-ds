@@ -1,0 +1,56 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "42465f5973a4a39a3d26d4e0c68a92e6",
+    "content-hash": "eb29c0b79f5aa14e6f5281191420b43e",
+    "packages": [
+        {
+            "name": "lavoiesl/php-benchmark",
+            "version": "v1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lavoiesl/php-benchmark.git",
+                "reference": "3618d0c2e2c0c0e4452a446a8b125295a1d47d4d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lavoiesl/php-benchmark/zipball/3618d0c2e2c0c0e4452a446a8b125295a1d47d4d",
+                "reference": "3618d0c2e2c0c0e4452a446a8b125295a1d47d4d",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Lavoiesl\\PhpBenchmark\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sébastien Lavoie",
+                    "email": "github@lavoie.sl",
+                    "homepage": "http://sebastien.lavoie.sl",
+                    "role": "Packager"
+                }
+            ],
+            "description": "Tool to compare different functions in PHP",
+            "time": "2014-03-22 07:38:16"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": "^7.0.9"
+    },
+    "platform-dev": []
+}

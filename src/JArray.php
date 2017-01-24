@@ -5,158 +5,104 @@ namespace jugger\ds;
 /**
  * Ассоциативный массив
  */
-class JArray implements \ArrayAccess, \Serializable, \Countable, \Iterator
+class JArray extends JCollection
 {
-    use DataImplementsTrait;
-
     protected $data;
-
-    /*
-     * служебные функции
-     */
 
     public function __construct(array $data = [])
     {
         $this->data = $data;
     }
 
-    public function toArray()
-    {
-        return $this->data;
-    }
-
-    /*
-     * кол-во элементов
-     */
-
-    public function count()
-    {
-        return count($this->data);
-    }
-
-    public function size()
-    {
-        return $this->count();
-    }
-
-    public function length()
-    {
-        return $this->count();
-    }
-
-    /*
-     * Добавить
-     */
-
-    public function add(...$values): JArray
-    {
-        foreach ($values as $value) {
-            $this->data[] = $value;
-        }
-        return $this;
-    }
-
-    public function append(...$values): JArray
-    {
-        foreach ($values as $value) {
-            $this->data[] = $value;
-        }
-        return $this;
-    }
-
-    public function push(...$values): JArray
-    {
-        foreach ($values as $value) {
-            $this->data[] = $value;
-        }
-        return $this;
-    }
-
-    public function unshift(...$values)
-    {
-        foreach ($values as $value) {
-            array_unshift($this->data, $value);
-        }
-        return $this;
-    }
-
-    public function set($offset, $value)
-    {
-        $this->data[$offset] = $value;
-        return $this;
-    }
-
-    public function insert($offset, $value)
-    {
-        $this->set($offset, $value);
-        return $this;
-    }
-
-    /*
-     * Удалить
-     */
-
-    public function pop()
-    {
-        return array_pop($this->data);
-    }
+    //
+    // Методы доступа
+    //
 
     public function shift()
     {
         return array_shift($this->data);
     }
 
-    public function remove($offset)
+    public function unshift(...$values)
     {
-        $ret = $this->get($offset);
-        unset($this[$offset]);
-        return $ret;
-    }
-
-    public function removeKeys(...$keys)
-    {
-        foreach ($keys as $key) {
-            $this->remove($key);
-        }
+        array_unshift($this->data, ...$values);
         return $this;
     }
 
-    public function delete($offset)
+    public function get($key)
     {
-        return $this->remove($offset);
+        return $this->data[$key] ?? null;
     }
 
-    public function del($offset)
+    public function set($key, $value)
     {
-        return $this->remove($offset);
+        $this->data[$key] = $value;
+        return $this;
     }
 
-    /*
-     * Доступ
-     */
-
-    public function get($offset)
+    public function insert($key, $value)
     {
-        return $this[$offset];
+        return $this->splice($key, 0, [$value]);
     }
 
-    public function at($offset)
+    public function remove(...$keys)
     {
-        return $this[$offset];
+        $value = null;
+        foreach ($keys as $key) {
+            $value = $this->data[$key] ?? null;
+            unset($this->data[$key]);
+        }
+        return $value;
     }
 
-    /*
-     * Методы не модифицирующие массив
-     */
-
-    public function values()
+    public function push(...$values)
     {
-        return new static(array_values($this->data));
+        array_push($this->data, ...$values);
+        return $this;
     }
 
-    public function keys()
+    public function pop()
+    {
+        return array_pop($this->data);
+    }
+
+    public function exists($key): bool
+    {
+        return isset($this->data[$key]);
+    }
+
+    public function length(): int
+    {
+        return count($this->data);
+    }
+
+    //
+    // Методы модификаторы
+    //
+
+    public function sum(): float
+    {
+        return array_sum($this->data);
+    }
+
+    public function max(): float
+    {
+        return max($this->data);
+    }
+
+    public function min(): float
+    {
+        return min($this->data);
+    }
+
+    public function keys(): JCollection
     {
         return new static(array_keys($this->data));
+    }
+
+    public function values(): JCollection
+    {
+        return new static(array_values($this->data));
     }
 
     public function reduce(\Closure $callback, $initial = null)
@@ -164,64 +110,30 @@ class JArray implements \ArrayAccess, \Serializable, \Countable, \Iterator
         return array_reduce($this->data, $callback, $initial);
     }
 
-    public function keyExist($key)
-    {
-        return array_key_exists($key, $this->data);
-    }
-
     public function search($value, $strict = false)
     {
         return array_search($value, $this->data, $strict);
     }
 
-    public function exist($value, $strict = false)
-    {
-        return $this->search($value, $strict);
-    }
-
-    public function indexOf($value, $strict = false)
-    {
-        return $this->search($value, $strict);
-    }
-
-    public function contains($value, $strict = false)
-    {
-        return $this->search($value, $strict);
-    }
-
-    public function sum()
-    {
-        return array_sum($this->data);
-    }
-
-    public function max()
-    {
-        return max($this->data);
-    }
-
-    public function min()
-    {
-        return min($this->data);
-    }
-
-    public function slice($offset, $length = null, $preserve_keys = false)
+    public function slice(int $offset, int $length = null, $preserve_keys = false): JCollection
     {
         return new static(array_slice($this->data, $offset, $length, $preserve_keys));
     }
 
-    /*
-     * Методы модифицирующие массив
-     */
+    public function splice(int $offset, int $length, array $values = []): JCollection
+    {
+        return new static(array_splice($this->data, $offset, $length, $values));
+    }
 
-    public function fill($value, $count)
+    public function fill($value, int $count): JCollection
     {
         for ($i=0; $i<$count; $i++) {
-            $this->add($value);
+            $this->push($value);
         }
         return $this;
     }
 
-    public function filter(\Closure $callback = null, $flag = 0)
+    public function filter(\Closure $callback = null, $flag = 0): JCollection
     {
         if (is_null($callback)) {
             $callback = function($item) {
@@ -232,13 +144,13 @@ class JArray implements \ArrayAccess, \Serializable, \Countable, \Iterator
         return $this;
     }
 
-    public function map(\Closure $callback)
+    public function map(\Closure $callback): JCollection
     {
         $this->data = array_map($callback, $this->data);
         return $this;
     }
 
-    public function merge($data)
+    public function merge($data): JCollection
     {
         if ($data instanceof self) {
             $data = $data->toArray();
@@ -247,7 +159,7 @@ class JArray implements \ArrayAccess, \Serializable, \Countable, \Iterator
         return $this;
     }
 
-    public function replace($need, $replace, $strict = false)
+    public function replace($need, $replace, $strict = false): JCollection
     {
         $need = is_array($need) ? new static($need) : $need;
         $f = function($item) use($need, $replace, $strict) {
@@ -271,15 +183,20 @@ class JArray implements \ArrayAccess, \Serializable, \Countable, \Iterator
         return $this->map($f);
     }
 
-    public function sort($sort_flags = SORT_REGULAR)
+    public function sort($sort_flags = SORT_REGULAR): JCollection
     {
         sort($this->data, $sort_flags);
         return $this;
     }
 
-    public function unique($sort_flags = SORT_STRING)
+    public function unique($sort_flags = SORT_STRING): JCollection
     {
         $this->data = array_unique($this->data, $sort_flags);
         return $this;
+    }
+
+    public function toArray(): array
+    {
+        return $this->data;
     }
 }
