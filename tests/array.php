@@ -114,4 +114,19 @@ class JArrayTest extends TestCase
         $arr->sort();
         $this->assertTrue([1,2,2,4,4,8,9] == $arr->toArray());
     }
+
+    public function testSubArray()
+    {
+        $arr = new JArray([
+            'key1' => 'value1',
+            'key2' => 'value2',
+            'key3' => 'value3',
+            'key4' => 'value4',
+        ]);
+        $subArray = $arr->subArray(['key1', 'key3']);
+
+        $this->assertTrue($subArray->count() == 2);
+        $this->assertEquals($subArray['key1'], 'value1');
+        $this->assertEquals($subArray['key3'], 'value3');
+    }
 }

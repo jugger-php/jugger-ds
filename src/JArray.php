@@ -199,4 +199,13 @@ class JArray extends JCollection
     {
         return $this->data;
     }
+
+    public function subArray(array $keys): JArray
+    {
+        $arr = clone $this;
+        $arr->filter(function($key) use($keys) {
+            return in_array($key, $keys);
+        }, \ARRAY_FILTER_USE_KEY);
+        return $arr;
+    }
 }
